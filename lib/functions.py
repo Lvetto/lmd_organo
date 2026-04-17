@@ -1,6 +1,28 @@
 import numpy as np
 
 def get_average_spectrum(data, rate, window_size, window_step):
+    """Compute the average magnitude spectrum over central signal windows.
+
+    The function analyzes the central half of the input signal, applies a
+    Gaussian window to each frame, computes the real FFT magnitude for each
+    frame, and returns the mean magnitude spectrum.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        Input time-domain signal samples.
+    rate : float
+        Sampling rate in Hz.
+    window_size : int
+        Number of samples in each analysis window.
+    window_step : int
+        Hop size in samples between consecutive windows.
+
+    Returns
+    -------
+    tuple[np.ndarray, np.ndarray]
+        Frequency bins in Hz and corresponding averaged FFT magnitudes.
+    """
 
     start = len(data) // 4
     end = 3 * len(data) // 4
@@ -26,6 +48,21 @@ def get_average_spectrum(data, rate, window_size, window_step):
     return freqs, avg_magnitude
 
 def get_f0_from_peaks(peaks_frequencies):
+    """Estimate the fundamental frequency from detected spectral peaks.
+
+    The input peak frequencies are sorted, adjacent differences are computed,
+    and the median spacing is returned as an f0 estimate.
+
+    Parameters
+    ----------
+    peaks_frequencies : np.ndarray
+        Detected peak frequencies in Hz.
+
+    Returns
+    -------
+    float
+        Estimated fundamental frequency in Hz.
+    """
 
     freqs = np.sort(peaks_frequencies)
     diffs = np.diff(freqs)
@@ -35,6 +72,28 @@ def get_f0_from_peaks(peaks_frequencies):
     return f0_mediana
 
 def extract_harmonics(frequencies, fft_magnitude, f0, num_harmonics):
+    """Extract and normalize harmonic amplitudes from an averaged FFT spectrum.
+
+    For each harmonic i (from 1 to num_harmonics), this function searches
+    the interval around i*f0 with a tolerance of 5% of f0 and keeps the
+    maximum FFT magnitude found in that interval.
+
+    Parameters
+    ----------
+    frequencies : np.ndarray
+        Frequency axis of the FFT (Hz).
+    fft_magnitude : np.ndarray
+        Magnitude spectrum corresponding to frequencies.
+    f0 : float
+        Fundamental frequency (Hz).
+    num_harmonics : int
+        Number of harmonics to extract.
+
+    Returns
+    -------
+    np.ndarray
+        Harmonic amplitudes normalized to the first harmonic.
+    """
 
     harmonic_amplitudes = []
     tolerance = f0 * 0.05 
