@@ -114,6 +114,33 @@ def get_f0_from_peaks(peaks_frequencies):
 
     return float(max(f0_mediana, 0.0))
 
+def get_f0_from_regression(peak_frequencies):
+    """Estimate the fundamental frequency from detected spectral peaks using linear regression.
+
+    Parameters
+    ----------
+    peak_frequencies : np.ndarray
+        Detected peak frequencies in Hz.
+
+    Returns
+    -------
+    float
+        Estimated fundamental frequency in Hz. Returns ``0.0`` when
+        estimation is not possible.
+    """
+    freqs = np.sort(peak_frequencies)
+    if freqs.size < 2:
+        return 0.0
+
+    x = np.arange(1, len(freqs) + 1)
+    y = freqs
+
+    # Perform linear regression
+    coefficients = np.polyfit(x, y, 1)
+    f0_regression = coefficients[0]
+
+    return float(max(f0_regression, 0.0))
+
 def extract_harmonics(frequencies, fft_magnitude, f0, num_harmonics):
     """Extract and normalize harmonic amplitudes from an averaged FFT spectrum.
 
