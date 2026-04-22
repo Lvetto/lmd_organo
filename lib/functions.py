@@ -38,15 +38,15 @@ def get_average_spectrum(data, rate, window_size, window_step):
     if window_size <= 0 or window_step <= 0:
         raise ValueError("window_size and window_step must be > 0")
 
-    rms = np.sqrt(np.convolve(data**2, np.ones(1000) / 1000, mode='same'))
-    threshold = np.max(rms) * 0.7
-    stable_indices = np.where(rms > threshold)[0]
+    rms = np.sqrt(np.convolve(data**2, np.ones(1000) / 1000, mode='same')) # Compute a smoothed RMS envelope with a 1000-sample window
+    threshold = np.max(rms) * 0.5 # Define a threshold at 50% of the maximum RMS to identify stable regions
+    stable_indices = np.where(rms > threshold)[0] # Get indices of samples where the RMS exceeds the threshold, indicating stable signal regions
 
     if stable_indices.size == 0:
 
         segment = data
     else:
-        start, end = stable_indices[0], stable_indices[-1]
+        start, end = stable_indices[0], stable_indices[-1] # Define the start and end indices of the stable region based on the first and last indices where the RMS exceeds the threshold
         if end <= start:
             segment = data
         else:
