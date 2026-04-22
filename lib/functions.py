@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 EPS = np.finfo(float).eps
 
@@ -235,3 +236,26 @@ def get_adaptive_params(data, rate):
     n_adattiva = max(4096, min(n_adattiva, 32768))
     
     return n_adattiva, n_adattiva // 2
+
+def find_closest_note(freq, df_mapping):
+    """Return the musical note name closest to the provided frequency.
+
+    Parameters
+    ----------
+    freq : float | int | None
+        Estimated frequency in Hz.
+    df_mapping : pandas.DataFrame
+        Mapping table containing at least two columns:
+        - ``Frequenza``: reference frequency in Hz
+        - ``Nome``: note label to return
+
+    Returns
+    -------
+    str | None
+        Closest note name if ``freq`` is finite and positive, otherwise ``None``.
+    """
+    if freq is None or not np.isfinite(freq) or freq <= 0:
+        return None
+
+    idx = (df_mapping['Frequenza'] - freq).abs().idxmin()
+    return df_mapping.loc[idx, 'Nome']
