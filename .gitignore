@@ -1,4 +1,12 @@
-./venv/*
-*__pycache__/*
+# Ambienti virtuali
+.venv/
+
+# Cache di Python
+__pycache__/
 *.pyc
-.vscode/*
+
+# Configurazioni dell'editor (VS Code)
+.vscode/
+
+# File di dati locali
+risultati_f0.csv
